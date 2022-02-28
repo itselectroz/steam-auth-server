@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import { createServer, Server, Socket } from "net";
 import SteamUser from "steam-user";
 import { SteamClient } from "./SteamClient";
@@ -24,6 +25,10 @@ export class SteamServer {
     this.setupEvents();
   }
 
+  public listen() {
+    this.server.listen(this.port, this.host);
+  }
+  
   public login(username: string, password: string) {
     this.user.logOn({
       accountName: username,
@@ -33,6 +38,20 @@ export class SteamServer {
 
   public getEncryptedAppTicket(appId: number) {
     return this.user.getEncryptedAppTicket(appId);
+  }
+
+  public getSteamID64() {
+    return this.user.steamID?.getSteamID64() || "";
+  }
+
+  public getPersonaName() {
+    return this.user.accountInfo?.name || "";
+  }
+
+  public getPersonaID() {
+    return createHash("sha256")
+      .update(this.getSteamID64())
+      .digest("hex");
   }
 
   private setupEvents() {
