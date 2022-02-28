@@ -10,7 +10,7 @@
   "author": "itselectroz",
   "license": "MIT",
   "dependencies": {
-    "node-steam-user": "^0.0.3"
+    "steam-user": "^4.22.1"
   },
   "devDependencies": {
     "@types/node": "^17.0.21",

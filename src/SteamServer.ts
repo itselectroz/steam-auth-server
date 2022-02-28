@@ -54,11 +54,18 @@ export class SteamServer {
       .digest("hex");
   }
 
+  public close() {
+    this.server.close();
+    this.user.logOff();
+
+    this.log("Closing server.");
+  }
+
   private setupEvents() {
     this.user.on('loggedOn', this.onLogon.bind(this));
     this.user.on('accountInfo', this.onAccountInfo.bind(this));
 
-    this.server.on('connect', this.onConnect.bind(this));
+    this.server.on('connection', this.onConnection.bind(this));
     this.server.on('error', this.onError.bind(this));
     this.server.on('close', this.onClose.bind(this));
   }
@@ -67,11 +74,11 @@ export class SteamServer {
     this.log(`SteamUser has logged on as ${this.user.steamID?.getSteamID64()}`);
   }
 
-  private onAccountInfo() {
-    this.log(` - Steam username: ${this.user.accountInfo?.name}`);
+  private onAccountInfo(name: string) {
+    this.log(` - Steam username: ${name}`);
   }
   
-  private onConnect(socket: Socket) {
+  private onConnection(socket: Socket) {
     this.log("Server has a new connection!");
 
     this.clients.push(new SteamClient(socket, this));
@@ -89,4 +96,6 @@ export class SteamServer {
   private log(msg: string) {
     console.log(`[SERVER] ${msg}`);
   }
+
+
 }

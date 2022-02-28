@@ -7,6 +7,8 @@ export class SteamClient {
   private socket: Socket;
 
   constructor(socket: Socket, server: SteamServer) {
+    this.log("New steam client!");
+    
     this.socket = socket;
     this.server = server;
 
@@ -16,6 +18,7 @@ export class SteamClient {
   }
 
   public sendAccountData() {
+    this.log("Sending account data.");
     this.sendMessage("personaName", this.writeUTF(this.server.getPersonaName()));
     this.sendMessage("steamID", this.writeUTF(this.server.getSteamID64()));
     this.sendMessage("personaID", this.writeUTF(this.server.getPersonaID()));
@@ -48,6 +51,8 @@ export class SteamClient {
   private async onData(data: Buffer) {
     const message = data.toString();
 
+    this.log(`Received a ${message} request.`);
+
     switch(message) {
       case "ticket":
         const ticket = await this.server.getEncryptedAppTicket(!!process.env.APPID ? Number.parseInt(process.env.APPID) : 291550 );
@@ -61,6 +66,8 @@ export class SteamClient {
           ...ticket.encryptedAppTicket, 
           ticket.encryptedAppTicket.length
         ]));
+        
+        this.log(`Sent encrypted app ticket to client.`);
 
         break;
     }
